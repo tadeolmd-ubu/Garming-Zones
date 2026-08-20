@@ -1,23 +1,30 @@
 import Toybox.Activity;
 import Toybox.Lang;
 import Toybox.Time;
+import Toybox.UserProfile;
 import Toybox.WatchUi;
 
 class ZoneVibroView extends WatchUi.SimpleDataField {
 
-    // Set the label of the data field here.
+    hidden var _hrZones as Array<Number> or Null;
+
     function initialize() {
         SimpleDataField.initialize();
-        label = "My Label";
+        label = "Zona";
+        _hrZones = UserProfile.getHeartRateZones(UserProfile.HR_ZONE_SPORT_GENERIC);
     }
 
-    // The given info object contains all the current workout
-    // information. Calculate a value and return it in this method.
-    // Note that compute() and onUpdate() are asynchronous, and there is no
-    // guarantee that compute() will be called before onUpdate().
     function compute(info as Activity.Info) as Numeric or Duration or String or Null {
-        // See Activity.Info in the documentation for available information.
-        return 0.0;
+        var hr = info.currentHeartRate;
+        if (hr == null || hr <= 0 || _hrZones == null) {
+            return "--";
+        }
+        for (var i = 0; i < _hrZones.size(); i++) {
+            if (hr <= _hrZones[i]) {
+                return "Z" + (i + 1);
+            }
+        }
+        return "Z5";
     }
 
 }
